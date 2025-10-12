@@ -30,6 +30,15 @@ func main() {
 	}
 	defer ch.Close()
 
+	_, _, err = pubsub.DeclareAndBind(
+		conn, routing.ExchangePerilTopic,
+		"game_logs", routing.GameLogSlug+".*",
+		pubsub.DurableQueue,
+	)
+	if err != nil {
+		log.Fatalf("Failed to declare and bind game logs queue: %v", err)
+	}
+
 	for {
 		words := gamelogic.GetInput()
 		if len(words) == 0 {
