@@ -56,7 +56,8 @@ func main() {
 			fmt.Println("sending resume")
 			pubsub.PublishJSON(
 				ch, routing.ExchangePerilDirect,
-				routing.PauseKey, routing.PlayingState{IsPaused: false},
+				routing.PauseKey,
+				routing.PlayingState{IsPaused: false},
 			)
 		case "quit":
 			fmt.Println("exiting...")
