@@ -30,10 +30,13 @@ func main() {
 	}
 	defer ch.Close()
 
-	_, _, err = pubsub.DeclareAndBind(
-		conn, routing.ExchangePerilTopic,
-		"game_logs", routing.GameLogSlug+".*",
+	err = pubsub.SubscribeGob(
+		conn,
+		routing.ExchangePerilTopic,
+		"game_logs",
+		"*",
 		pubsub.SimpleQueueDurable,
+		handlerWriteLog,
 	)
 	if err != nil {
 		log.Fatalf("Failed to declare and bind game logs queue: %v", err)
