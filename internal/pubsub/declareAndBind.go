@@ -4,11 +4,11 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type SimpleQueueType string
+type SimpleQueueType int
 
 const (
-	DurableQueue   SimpleQueueType = "durable"
-	TransientQueue SimpleQueueType = "transient"
+	DurableQueue SimpleQueueType = iota
+	TransientQueue
 )
 
 func DeclareAndBind(
@@ -23,25 +23,29 @@ func DeclareAndBind(
 		return nil, amqp.Queue{}, err
 	}
 
+	tbl := amqp.Table{
+		"x-dead-letter-exchange": "peril_dlx",
+	}
+
 	var q amqp.Queue
 	switch queueType {
-	case "durable":
+	case DurableQueue:
 		q, err = ch.QueueDeclare(
 			queueName,
 			true,  // durable
 			false, // delete when unused
 			false, // exclusive
 			false, // no-wait
-			nil,   // arguments
+			tbl,   // arguments
 		)
-	case "transient":
+	case TransientQueue:
 		q, err = ch.QueueDeclare(
 			queueName,
 			false, // durable
 			true,  // delete when unused
 			true,  // exclusive
 			false, // no-wait
-			nil,   // arguments
+			tbl,   // arguments
 		)
 	}
 	if err != nil {
