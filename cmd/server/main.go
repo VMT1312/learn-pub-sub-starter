@@ -33,7 +33,7 @@ func main() {
 	_, _, err = pubsub.DeclareAndBind(
 		conn, routing.ExchangePerilTopic,
 		"game_logs", routing.GameLogSlug+".*",
-		pubsub.DurableQueue,
+		pubsub.SimpleQueueDurable,
 	)
 	if err != nil {
 		log.Fatalf("Failed to declare and bind game logs queue: %v", err)
