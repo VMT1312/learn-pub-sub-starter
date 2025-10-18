@@ -34,7 +34,7 @@ func main() {
 		conn,
 		routing.ExchangePerilTopic,
 		"game_logs",
-		"*",
+		routing.GameLogSlug+".*",
 		pubsub.SimpleQueueDurable,
 		handlerWriteLog,
 	)
