@@ -30,7 +30,7 @@ func SubscribeGob[T any](
 	queueType SimpleQueueType,
 	handler func(T) Acktype,
 ) error {
-	return subscribe[T](conn, exchange, queueName, key, queueType, handler, decode[T])
+	return subscribe(conn, exchange, queueName, key, queueType, handler, decode[T])
 }
 
 func SubscribeJSON[T any](
@@ -47,7 +47,7 @@ func SubscribeJSON[T any](
 		return target, err
 	}
 
-	return subscribe[T](conn, exchange, queueName, key, queueType, handler, unmarshaller)
+	return subscribe(conn, exchange, queueName, key, queueType, handler, unmarshaller)
 }
 
 func DeclareAndBind(
@@ -101,6 +101,11 @@ func subscribe[T any](
 	ch, queue, err := DeclareAndBind(conn, exchange, queueName, key, queueType)
 	if err != nil {
 		return fmt.Errorf("could not declare and bind queue: %v", err)
+	}
+
+	err = ch.Qos(10, 0, false)
+	if err != nil {
+		return fmt.Errorf("could not set QoS: %v", err)
 	}
 
 	msgs, err := ch.Consume(
